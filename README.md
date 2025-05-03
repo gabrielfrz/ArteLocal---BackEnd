@@ -46,3 +46,6 @@ Deployment Ready
 Includes vercel.json for seamless Vercel deployment.
 
 Developed with ❤️ by @gabrielfrz
+
+# Backend PostgreSQL
+_Forçando redeploy na Vercel._
