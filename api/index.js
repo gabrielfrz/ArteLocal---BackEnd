@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { connect } from './database/configpostgre.js'; 
+import pg from 'pg'; 
+import { connect } from './database/configpostgre.js';
 import User from './models/User.js';
 import userRoute from './routes/user.route.js';
 import exemploeroute from './routes/example.route.js';
