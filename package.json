@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1",
     "pg": "^8.15.6",
+    "react-toastify": "^11.0.5",
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
