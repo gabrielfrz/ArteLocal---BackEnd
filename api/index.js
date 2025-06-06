@@ -15,11 +15,14 @@ app.use("/user", userRoute);
 app.use("/protected", exemploeroute);
 
 app.get('/', (req, res) => {
-  res.send({ message: 'Hello World from Vercel!' });
+  res.send({ message: 'Seja bem-vindo ao backend do ArteLocal. A API está ativa e pronta para uso.' });
 });
 
-
-await connect();
-
-
-export default app;
+connect().then(() => {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log('\nBackend do ArteLocal iniciado com sucesso.');
+    console.log(`Servidor disponível em: http://localhost:${PORT}/`);
+    console.log('A API está pronta para receber requisições.');
+  });
+});
