@@ -15,6 +15,7 @@ const app = express();
 const allowedOrigins = [
   'https://arte-local-frontend.vercel.app',
   'http://localhost:5173',
+  'https://glowing-fiesta-pvj6qqj9g76crx5-5173.app.github.dev' 
 ];
 
 app.use(cors({
