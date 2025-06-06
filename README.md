@@ -14,6 +14,3 @@ This project is a RESTful API built with Node.js, Express, and Sequelize, connec
 🧱 Modular code architecture
 
 
-
-https://github.com/user-attachments/assets/b1e06adb-1319-4fe6-9be7-5d8bf5af0e3c
-
