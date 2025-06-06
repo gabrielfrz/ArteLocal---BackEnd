@@ -15,12 +15,11 @@ app.use("/user", userRoute);
 app.use("/protected", exemploeroute);
 
 app.get('/', (req, res) => {
-  res.send({ message: 'Hello World!' });
+  res.send({ message: 'Hello World from Vercel!' });
 });
 
-connect().then(() => {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on port http://localhost:${PORT}/`);
-  });
-});
+
+await connect();
+
+
+export default app;
