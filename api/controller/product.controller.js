@@ -14,7 +14,7 @@ export const create = async (req, res) => {
       title,
       description,
       price,
-      image, 
+      image,
       contact,
       artistName
     });
@@ -26,7 +26,7 @@ export const create = async (req, res) => {
       price: newProduct.price,
       contact: newProduct.contact,
       artistName: newProduct.artistName,
-      imageUrl: newProduct.image,
+      image: newProduct.image,
       createdAt: newProduct.createdAt
     });
   } catch (error) {
@@ -56,7 +56,7 @@ export const list = async (req, res) => {
       price: product.price,
       contact: product.contact,
       artistName: product.artistName,
-      imageUrl: product.image, // Também retornando o campo texto
+      image: product.image,
       createdAt: product.createdAt
     }));
 
