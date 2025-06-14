@@ -1,5 +1,6 @@
 import Product from '../models/Product.js';
 import { Op } from 'sequelize';
+import jwt from 'jsonwebtoken';
 
 // POST /products
 export const create = async (req, res) => {
@@ -35,7 +36,7 @@ export const create = async (req, res) => {
   }
 };
 
-// GET /products
+// GET /products - Listar todos
 export const list = async (req, res) => {
   try {
     const { maxPrice } = req.query;
@@ -63,6 +64,30 @@ export const list = async (req, res) => {
     return res.status(200).json(productsFormatted);
   } catch (error) {
     console.error('Error fetching products:', error.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// GET /products/my - Listar apenas os produtos do usuário logado
+export const listByUser = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await Product.sequelize.models.User.findByPk(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    const userProducts = await Product.findAll({
+      where: { artistName: user.name },
+      order: [['createdAt', 'DESC']]
+    });
+
+    return res.status(200).json(userProducts);
+  } catch (error) {
+    console.error('Error fetching user products:', error.message);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
