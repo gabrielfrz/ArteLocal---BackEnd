@@ -15,7 +15,7 @@ export const createUser = async ({ name, email, password, role }) => {
     name,
     email,
     password: hashedPassword,
-    role // Agora salva o tipo de perfil
+    role
   });
 
   return user;
@@ -37,5 +37,6 @@ export const authenticateUser = async ({ email, password }) => {
     expiresIn: '1h'
   });
 
-  return { token, name: user.name };
+  
+  return { token, name: user.name, role: user.role };
 };
