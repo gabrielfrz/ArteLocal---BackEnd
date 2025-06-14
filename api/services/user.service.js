@@ -2,7 +2,7 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-export const createUser = async ({ name, email, password }) => {
+export const createUser = async ({ name, email, password, role }) => {
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     throw new Error('Email already in use');
@@ -14,7 +14,8 @@ export const createUser = async ({ name, email, password }) => {
   const user = await User.create({
     name,
     email,
-    password: hashedPassword
+    password: hashedPassword,
+    role // Agora salva o tipo de perfil
   });
 
   return user;
