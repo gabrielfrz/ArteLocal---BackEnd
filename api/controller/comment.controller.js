@@ -9,7 +9,9 @@ export const addComment = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findByPk(decoded.id);
-    if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
 
     const { productId, text } = req.body;
     if (!text || !productId) {
@@ -22,7 +24,13 @@ export const addComment = async (req, res) => {
       content: text
     });
 
-    return res.status(201).json(newComment);
+    return res.status(201).json({
+      id: newComment.id,
+      productId: newComment.productId,
+      author: newComment.author,
+      content: newComment.content,
+      createdAt: newComment.createdAt
+    });
   } catch (error) {
     console.error('Erro ao adicionar comentário:', error);
     return res.status(500).json({ message: 'Erro ao adicionar comentário' });
@@ -33,11 +41,20 @@ export const addComment = async (req, res) => {
 export const getCommentsByProduct = async (req, res) => {
   try {
     const { productId } = req.params;
+
     const comments = await Comment.findAll({
       where: { productId },
       order: [['createdAt', 'DESC']]
     });
-    return res.status(200).json(comments);
+
+    const formattedComments = comments.map((c) => ({
+      id: c.id,
+      author: c.author,
+      content: c.content,
+      createdAt: c.createdAt
+    }));
+
+    return res.status(200).json(formattedComments);
   } catch (error) {
     console.error('Erro ao buscar comentários:', error);
     return res.status(500).json({ message: 'Erro ao buscar comentários' });

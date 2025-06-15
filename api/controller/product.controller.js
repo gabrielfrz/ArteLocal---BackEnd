@@ -49,49 +49,51 @@ export const list = async (req, res) => {
     });
 
     const productsWithDetails = await Promise.all(products.map(async (product) => {
+      let artistEmail = 'Email não encontrado';
+      let averageRating = 'Sem avaliações';
+      let comments = [];
+
       try {
         const user = await User.findOne({ where: { name: product.artistName } });
+        if (user) artistEmail = user.email;
+      } catch (err) {
+        console.error(`Erro ao buscar email do artesão ${product.artistName}:`, err.message);
+        artistEmail = 'Erro ao buscar email';
+      }
 
+      try {
         const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
-        const averageRating = ratings.length
-          ? (ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length).toFixed(1)
-          : 'Sem avaliações';
+        if (ratings.length > 0) {
+          const total = ratings.reduce((sum, r) => sum + r.score, 0);
+          averageRating = (total / ratings.length).toFixed(1);
+        }
+      } catch (err) {
+        console.error(`Erro ao calcular média de ${product.artistName}:`, err.message);
+        averageRating = 'Erro ao calcular';
+      }
 
-        const comments = await Comment.findAll({
+      try {
+        comments = await Comment.findAll({
           where: { productId: product.id },
           order: [['createdAt', 'DESC']]
         });
-
-        return {
-          id: product.id,
-          title: product.title,
-          description: product.description,
-          price: product.price,
-          contact: product.contact.replace(/\D/g, ''),
-          artistName: product.artistName,
-          artistEmail: user ? user.email : 'Email não disponível',
-          averageRating,
-          comments,
-          image: product.image,
-          createdAt: product.createdAt
-        };
       } catch (err) {
-        console.error(`Erro ao carregar detalhes do produto ${product.id}:`, err.message);
-      
-        return {
-          id: product.id,
-          title: product.title,
-          description: product.description,
-          price: product.price,
-          contact: product.contact,
-          artistName: product.artistName,
-          artistEmail: 'Erro ao buscar email',
-          averageRating: 'Erro ao calcular',
-          comments: [],
-          image: product.image,
-          createdAt: product.createdAt
-        };
+        console.error(`Erro ao buscar comentários do produto ${product.id}:`, err.message);
       }
+
+      return {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        contact: product.contact.replace(/\D/g, ''),
+        artistName: product.artistName,
+        artistEmail,
+        averageRating,
+        comments,
+        image: product.image,
+        createdAt: product.createdAt
+      };
     }));
 
     return res.status(200).json(productsWithDetails);
