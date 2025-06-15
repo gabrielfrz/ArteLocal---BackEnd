@@ -6,17 +6,14 @@ const Comment = sequelize.define('Comment', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  commenterName: {
+  author: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  text: {
+  content: {
     type: DataTypes.TEXT,
     allowNull: false,
   }
-}, {
-  tableName: 'comments',
-  timestamps: true,
 });
 
 export default Comment;

@@ -2,7 +2,7 @@ import Comment from '../models/Comment.js';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-// POST /comments
+// POST /comments - Adicionar novo comentário
 export const addComment = async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
@@ -29,7 +29,7 @@ export const addComment = async (req, res) => {
   }
 };
 
-// GET /comments/:productId
+// GET /comments/:productId - Listar comentários de um produto
 export const getCommentsByProduct = async (req, res) => {
   try {
     const { productId } = req.params;
