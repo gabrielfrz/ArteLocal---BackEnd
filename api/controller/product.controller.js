@@ -23,23 +23,14 @@ export const create = async (req, res) => {
       artistName
     });
 
-    return res.status(201).json({
-      id: newProduct.id,
-      title: newProduct.title,
-      description: newProduct.description,
-      price: newProduct.price,
-      contact: newProduct.contact,
-      artistName: newProduct.artistName,
-      image: newProduct.image,
-      createdAt: newProduct.createdAt
-    });
+    return res.status(201).json(newProduct);
   } catch (error) {
-    console.error('Error creating product:', error.message);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error('Erro ao criar produto:', error.message);
+    return res.status(500).json({ message: 'Erro interno no servidor' });
   }
 };
 
-// GET /products - Área do Cliente - Listar todos com filtro de preço, email, avaliação média e comentários
+// GET /products - Listar produtos (cliente)
 export const list = async (req, res) => {
   try {
     const { minPrice, maxPrice, order = 'asc' } = req.query;
@@ -59,7 +50,6 @@ export const list = async (req, res) => {
 
     const productsWithDetails = await Promise.all(products.map(async (product) => {
       const user = await User.findOne({ where: { name: product.artistName } });
-
       const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
       const averageRating = ratings.length
         ? (ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length).toFixed(1)
@@ -87,21 +77,19 @@ export const list = async (req, res) => {
 
     return res.status(200).json(productsWithDetails);
   } catch (error) {
-    console.error('Error fetching products:', error.message);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error('Erro ao listar produtos:', error.message);
+    return res.status(500).json({ message: 'Erro interno no servidor' });
   }
 };
 
-// GET /products/my - Listar apenas os produtos do usuário logado (artesão)
+// GET /products/my - Listar produtos do artesão logado
 export const listByUser = async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const user = await User.findByPk(decoded.id);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
-    }
+
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
 
     const userProducts = await Product.findAll({
       where: { artistName: user.name },
@@ -110,7 +98,36 @@ export const listByUser = async (req, res) => {
 
     return res.status(200).json(userProducts);
   } catch (error) {
-    console.error('Error fetching user products:', error.message);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error('Erro ao listar produtos do usuário:', error.message);
+    return res.status(500).json({ message: 'Erro interno no servidor' });
+  }
+};
+
+// DELETE /products/:id - Excluir obra (apenas o dono pode excluir)
+export const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findByPk(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+
+    const product = await Product.findByPk(id);
+    if (!product) {
+      return res.status(404).json({ message: 'Produto não encontrado.' });
+    }
+
+    if (product.artistName !== user.name) {
+      return res.status(403).json({ message: 'Você só pode excluir suas próprias obras.' });
+    }
+
+    await product.destroy();
+    return res.status(200).json({ message: 'Produto excluído com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao excluir produto:', error.message);
+    return res.status(500).json({ message: 'Erro interno ao excluir produto.' });
   }
 };
