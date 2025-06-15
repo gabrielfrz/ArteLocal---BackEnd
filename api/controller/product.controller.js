@@ -1,6 +1,7 @@
 import Product from '../models/Product.js';
 import { Op } from 'sequelize';
 import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 
 // POST /products
 export const create = async (req, res) => {
@@ -36,7 +37,7 @@ export const create = async (req, res) => {
   }
 };
 
-// GET /products - Listar todos
+// GET /products - Listar todos (usado na área do cliente)
 export const list = async (req, res) => {
   try {
     const { maxPrice } = req.query;
@@ -74,7 +75,7 @@ export const listByUser = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await Product.sequelize.models.User.findByPk(decoded.id);
+    const user = await User.findByPk(decoded.id);
 
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado' });
