@@ -25,7 +25,7 @@ export const create = async (req, res) => {
 
     return res.status(201).json(newProduct);
   } catch (error) {
-    console.error('Erro ao criar produto:', error.message);
+    console.error('Erro ao criar produto:', error);
     return res.status(500).json({ message: 'Erro interno no servidor' });
   }
 };
@@ -54,31 +54,36 @@ export const list = async (req, res) => {
       let comments = [];
 
       try {
+     
         const user = await User.findOne({ where: { name: product.artistName } });
-        if (user) artistEmail = user.email;
+        if (user && user.email) artistEmail = user.email;
       } catch (err) {
-        console.error(`Erro ao buscar email do artesão ${product.artistName}:`, err.message);
+        console.error(`Erro ao buscar email de ${product.artistName}:`, err);
         artistEmail = 'Erro ao buscar email';
       }
 
       try {
+       
         const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
-        if (ratings.length > 0) {
-          const total = ratings.reduce((sum, r) => sum + r.score, 0);
-          averageRating = (total / ratings.length).toFixed(1);
+        const validRatings = ratings.filter(r => r && typeof r.score === 'number' && !isNaN(r.score));
+
+        if (validRatings.length > 0) {
+          const total = validRatings.reduce((sum, r) => sum + r.score, 0);
+          averageRating = (total / validRatings.length).toFixed(1);
         }
       } catch (err) {
-        console.error(`Erro ao calcular média de ${product.artistName}:`, err.message);
+        console.error(`Erro ao calcular média de ${product.artistName}:`, err);
         averageRating = 'Erro ao calcular';
       }
 
       try {
+       
         comments = await Comment.findAll({
           where: { productId: product.id },
           order: [['createdAt', 'DESC']]
         });
       } catch (err) {
-        console.error(`Erro ao buscar comentários do produto ${product.id}:`, err.message);
+        console.error(`Erro ao buscar comentários do produto ${product.id}:`, err);
       }
 
       return {
@@ -98,7 +103,7 @@ export const list = async (req, res) => {
 
     return res.status(200).json(productsWithDetails);
   } catch (error) {
-    console.error('Erro ao listar produtos:', error.message);
+    console.error('Erro ao listar produtos:', error);
     return res.status(500).json({ message: 'Erro interno ao listar produtos' });
   }
 };
@@ -119,7 +124,7 @@ export const listByUser = async (req, res) => {
 
     return res.status(200).json(userProducts);
   } catch (error) {
-    console.error('Erro ao listar produtos do usuário:', error.message);
+    console.error('Erro ao listar produtos do usuário:', error);
     return res.status(500).json({ message: 'Erro interno no servidor' });
   }
 };
@@ -148,7 +153,7 @@ export const deleteProduct = async (req, res) => {
     await product.destroy();
     return res.status(200).json({ message: 'Produto excluído com sucesso.' });
   } catch (error) {
-    console.error('Erro ao excluir produto:', error.message);
+    console.error('Erro ao excluir produto:', error);
     return res.status(500).json({ message: 'Erro interno ao excluir produto.' });
   }
 };
