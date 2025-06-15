@@ -1,21 +1,23 @@
 import Rating from '../models/Rating.js';
-import { Op } from 'sequelize';
 
+// POST /ratings
 export const addRating = async (req, res) => {
   try {
     const { artisanName, score } = req.body;
 
-    if (score < 1 || score > 5) {
-      return res.status(400).json({ message: 'Nota deve ser entre 1 e 5 estrelas.' });
+    if (!artisanName || score < 1 || score > 5) {
+      return res.status(400).json({ message: 'Nome do artesão e nota entre 1 e 5 são obrigatórios.' });
     }
 
     const newRating = await Rating.create({ artisanName, score });
     return res.status(201).json(newRating);
   } catch (error) {
+    console.error('Erro ao adicionar avaliação:', error);
     return res.status(500).json({ message: 'Erro ao adicionar avaliação' });
   }
 };
 
+// GET /ratings/:artisanName
 export const getAverageRating = async (req, res) => {
   try {
     const { artisanName } = req.params;
@@ -28,6 +30,7 @@ export const getAverageRating = async (req, res) => {
     const average = ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length;
     return res.status(200).json({ average: average.toFixed(1) });
   } catch (error) {
+    console.error('Erro ao buscar média de avaliações:', error);
     return res.status(500).json({ message: 'Erro ao buscar média de avaliações' });
   }
 };
