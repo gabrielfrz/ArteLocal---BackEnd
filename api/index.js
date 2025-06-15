@@ -8,7 +8,6 @@ import productRoute from './routes/product.route.js';
 import commentRoute from './routes/comment.route.js';
 import ratingRoute from './routes/rating.route.js';
 
-
 dotenv.config();
 
 const app = express();
@@ -19,7 +18,7 @@ const allowedOrigins = [
   'https://glowing-fiesta-pvj6qqj9g76crx5-5173.app.github.dev'
 ];
 
-// CORS Policy
+// Configuração CORS
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -31,31 +30,32 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Body parser
 app.use(express.json());
 
-// API Routes
+// Rotas da API
 app.use('/products', productRoute);
 app.use('/user', userRoute);
 app.use('/protected', exemploeroute);
+app.use('/comments', commentRoute);
+app.use('/ratings', ratingRoute);
 
 // Health Check
 app.get('/', (req, res) => {
   res.send({ message: 'Seja bem-vindo ao backend do ArteLocal. A API está ativa e pronta para uso.' });
 });
 
-// 404 Not Found
+// Rota 404
 app.use((req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
 });
 
-// Global Error Handler
+// Error Handler global
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Erro interno no servidor' });
 });
 
-// Start server
+// Inicialização do servidor
 connect().then(() => {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
@@ -64,6 +64,3 @@ connect().then(() => {
     console.log(' A API está pronta para receber requisições.');
   });
 });
-
-app.use('/comments', commentRoute);
-app.use('/ratings', ratingRoute);
