@@ -43,45 +43,50 @@ export const list = async (req, res) => {
         : { [Op.lte]: maxPrice };
     }
 
-    const validOrder = order.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
-
     const products = await Product.findAll({
       where: whereClause,
-      order: [['price', validOrder]]
+      order: [['price', order.toLowerCase() === 'desc' ? 'DESC' : 'ASC']]
     });
 
     const productsWithDetails = await Promise.all(products.map(async (product) => {
-      const user = await User.findOne({ where: { name: product.artistName } });
+      try {
+        const user = await User.findOne({ where: { name: product.artistName } });
+        const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
+        const averageRating = ratings.length
+          ? (ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length).toFixed(1)
+          : 'Sem avaliações';
 
-      const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
-      const averageRating = ratings.length
-        ? (ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length).toFixed(1)
-        : 'Sem avaliações';
+        const comments = await Comment.findAll({
+          where: { productId: product.id },
+          order: [['createdAt', 'DESC']]
+        });
 
-      const comments = await Comment.findAll({
-        where: { productId: product.id },
-        order: [['createdAt', 'DESC']]
-      });
-
-      return {
-        id: product.id,
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        contact: product.contact.replace(/\D/g, ''),
-        artistName: product.artistName,
-        artistEmail: user ? user.email : 'Email não encontrado',
-        averageRating,
-        comments,
-        image: product.image,
-        createdAt: product.createdAt
-      };
+        return {
+          id: product.id,
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          contact: product.contact.replace(/\D/g, ''),
+          artistName: product.artistName,
+          artistEmail: user ? user.email : 'Email não encontrado',
+          averageRating,
+          comments,
+          image: product.image,
+          createdAt: product.createdAt
+        };
+      } catch (err) {
+        console.error(`Erro ao carregar detalhes do produto ${product.id}:`, err.message);
+        return null;  // Ignora produtos com erro ao carregar detalhes
+      }
     }));
 
-    return res.status(200).json(productsWithDetails);
+    // Filtra os nulos (produtos com erro ao montar os detalhes)
+    const filteredProducts = productsWithDetails.filter(p => p !== null);
+
+    return res.status(200).json(filteredProducts);
   } catch (error) {
     console.error('Erro ao listar produtos:', error.message);
-    return res.status(500).json({ message: 'Erro interno no servidor' });
+    return res.status(500).json({ message: 'Erro interno ao listar produtos' });
   }
 };
 
