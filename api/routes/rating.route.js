@@ -5,7 +5,9 @@ import verifyToken from '../middleware/jwt.token.middleware.js';
 const router = express.Router();
 
 router.post('/', verifyToken, addRating);
+
+// Coloque a rota /check antes da /:artisanName
+router.get('/check/:artisanName', verifyToken, hasUserRatedArtisan);
 router.get('/:artisanName', getAverageRating);
-router.get('/check/:artisanName', verifyToken, hasUserRatedArtisan);  // <-- Nova rota
 
 export default router;
