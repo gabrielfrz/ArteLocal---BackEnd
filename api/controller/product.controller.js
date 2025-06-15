@@ -20,13 +20,13 @@ export const create = async (req, res) => {
       price,
       image,
       contact,
-      artistName
+      artistName,
     });
 
     return res.status(201).json(newProduct);
   } catch (error) {
-    console.error('Erro ao criar produto:', error.message);
-    return res.status(500).json({ message: 'Erro interno no servidor' });
+    console.error('Erro ao criar produto:', error);
+    return res.status(500).json({ message: 'Erro interno ao criar produto.' });
   }
 };
 
@@ -45,48 +45,53 @@ export const list = async (req, res) => {
 
     const products = await Product.findAll({
       where: whereClause,
-      order: [['price', order.toLowerCase() === 'desc' ? 'DESC' : 'ASC']]
+      order: [['price', order.toLowerCase() === 'desc' ? 'DESC' : 'ASC']],
     });
 
-    const productsWithDetails = await Promise.all(products.map(async (product) => {
-      try {
-        const user = await User.findOne({ where: { name: product.artistName } });
-        const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
-        const averageRating = ratings.length
-          ? (ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length).toFixed(1)
-          : 'Sem avaliações';
+    const productsWithDetails = await Promise.all(
+      products.map(async (product) => {
+        try {
+         
+          const user = await User.findOne({ where: { name: product.artistName } });
 
-        const comments = await Comment.findAll({
-          where: { productId: product.id },
-          order: [['createdAt', 'DESC']]
-        });
+         
+          const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
+          const averageRating = ratings.length
+            ? (ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length).toFixed(1)
+            : 'Sem avaliações';
 
-        return {
-          id: product.id,
-          title: product.title,
-          description: product.description,
-          price: product.price,
-          contact: product.contact.replace(/\D/g, ''),
-          artistName: product.artistName,
-          artistEmail: user ? user.email : 'Email não encontrado',
-          averageRating,
-          comments,
-          image: product.image,
-          createdAt: product.createdAt
-        };
-      } catch (err) {
-        console.error(`Erro ao carregar detalhes do produto ${product.id}:`, err.message);
-        return null;  // Ignora produtos com erro ao carregar detalhes
-      }
-    }));
+         
+          const comments = await Comment.findAll({
+            where: { productId: product.id },
+            order: [['createdAt', 'DESC']],
+          });
 
-    // Filtra os nulos (produtos com erro ao montar os detalhes)
-    const filteredProducts = productsWithDetails.filter(p => p !== null);
+          return {
+            id: product.id,
+            title: product.title,
+            description: product.description,
+            price: product.price,
+            contact: product.contact.replace(/\D/g, ''),
+            artistName: product.artistName,
+            artistEmail: user ? user.email : 'Email não encontrado',
+            averageRating,
+            comments,
+            image: product.image,
+            createdAt: product.createdAt,
+          };
+        } catch (err) {
+          console.error(`Erro ao montar detalhes do produto ID ${product.id}:`, err);
+          return null;
+        }
+      })
+    );
+
+    const filteredProducts = productsWithDetails.filter((p) => p !== null);
 
     return res.status(200).json(filteredProducts);
   } catch (error) {
-    console.error('Erro ao listar produtos:', error.message);
-    return res.status(500).json({ message: 'Erro interno ao listar produtos' });
+    console.error('Erro ao listar produtos:', error);
+    return res.status(500).json({ message: 'Erro interno ao listar produtos.' });
   }
 };
 
@@ -97,17 +102,17 @@ export const listByUser = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.id);
 
-    if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
 
     const userProducts = await Product.findAll({
       where: { artistName: user.name },
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
     });
 
     return res.status(200).json(userProducts);
   } catch (error) {
-    console.error('Erro ao listar produtos do usuário:', error.message);
-    return res.status(500).json({ message: 'Erro interno no servidor' });
+    console.error('Erro ao listar produtos do usuário:', error);
+    return res.status(500).json({ message: 'Erro interno ao listar produtos do usuário.' });
   }
 };
 
@@ -117,8 +122,8 @@ export const deleteProduct = async (req, res) => {
     const { id } = req.params;
     const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const user = await User.findByPk(decoded.id);
+
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
@@ -135,7 +140,7 @@ export const deleteProduct = async (req, res) => {
     await product.destroy();
     return res.status(200).json({ message: 'Produto excluído com sucesso.' });
   } catch (error) {
-    console.error('Erro ao excluir produto:', error.message);
+    console.error('Erro ao excluir produto:', error);
     return res.status(500).json({ message: 'Erro interno ao excluir produto.' });
   }
 };
