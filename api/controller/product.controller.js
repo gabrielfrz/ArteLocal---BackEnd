@@ -37,7 +37,7 @@ export const create = async (req, res) => {
   }
 };
 
-// GET /products - Listar todos (usado na área do cliente)
+// GET /products - Área do cliente - Listar todos
 export const list = async (req, res) => {
   try {
     const { maxPrice } = req.query;
@@ -51,25 +51,33 @@ export const list = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    const productsFormatted = products.map(product => ({
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      contact: product.contact,
-      artistName: product.artistName,
-      image: product.image,
-      createdAt: product.createdAt
+  
+    const productsWithUser = await Promise.all(products.map(async (product) => {
+      const user = await User.findOne({
+        where: { name: product.artistName }
+      });
+
+      return {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        contact: product.contact.replace(/\D/g, ''),  
+        artistName: product.artistName,
+        artistEmail: user ? user.email : 'Email não encontrado',
+        image: product.image,
+        createdAt: product.createdAt
+      };
     }));
 
-    return res.status(200).json(productsFormatted);
+    return res.status(200).json(productsWithUser);
   } catch (error) {
     console.error('Error fetching products:', error.message);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-// GET /products/my - Listar apenas os produtos do usuário logado
+// GET /products/my - Apenas do usuário logado
 export const listByUser = async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
