@@ -1,4 +1,29 @@
 import Rating from '../models/Rating.js';
+import jwt from 'jsonwebtoken';
+
+export const hasUserRatedArtisan = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+    const { artisanName } = req.params;
+
+    const existingRating = await Rating.findOne({
+      where: {
+        artisanName,
+        userId
+      }
+    });
+
+    const alreadyRated = !!existingRating;
+
+    return res.status(200).json({ alreadyRated });
+  } catch (error) {
+    console.error('Erro ao verificar avaliação:', error);
+    return res.status(500).json({ message: 'Erro ao verificar avaliação' });
+  }
+};
 
 // POST /ratings
 export const addRating = async (req, res) => {

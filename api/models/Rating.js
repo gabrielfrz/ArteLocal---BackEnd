@@ -13,6 +13,10 @@ const Rating = sequelize.define('Rating', {
       min: 1,
       max: 5,
     }
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   }
 }, {
   tableName: 'ratings',
