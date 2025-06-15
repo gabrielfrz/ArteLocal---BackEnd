@@ -1,6 +1,7 @@
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import Rating from '../models/Rating.js';
+import Comment from '../models/Comment.js';
 import { Op } from 'sequelize';
 import jwt from 'jsonwebtoken';
 
@@ -38,10 +39,10 @@ export const create = async (req, res) => {
   }
 };
 
-// GET /products - Área do Cliente - Listar todos com filtro de preço, email e avaliação média
+// GET /products - Área do Cliente - Listar todos com filtro de preço, email, avaliação média e comentários
 export const list = async (req, res) => {
   try {
-    const { minPrice, maxPrice } = req.query;
+    const { minPrice, maxPrice, order = 'asc' } = req.query;
 
     const whereClause = {};
     if (minPrice) whereClause.price = { [Op.gte]: minPrice };
@@ -53,7 +54,7 @@ export const list = async (req, res) => {
 
     const products = await Product.findAll({
       where: whereClause,
-      order: [['createdAt', 'DESC']]
+      order: [['price', order.toLowerCase() === 'desc' ? 'DESC' : 'ASC']]
     });
 
     const productsWithDetails = await Promise.all(products.map(async (product) => {
@@ -64,15 +65,21 @@ export const list = async (req, res) => {
         ? (ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length).toFixed(1)
         : 'Sem avaliações';
 
+      const comments = await Comment.findAll({
+        where: { productId: product.id },
+        order: [['createdAt', 'DESC']]
+      });
+
       return {
         id: product.id,
         title: product.title,
         description: product.description,
         price: product.price,
-        contact: product.contact.replace(/\D/g, ''),  // Limpa telefone
+        contact: product.contact.replace(/\D/g, ''),
         artistName: product.artistName,
         artistEmail: user ? user.email : 'Email não encontrado',
         averageRating,
+        comments,
         image: product.image,
         createdAt: product.createdAt
       };
