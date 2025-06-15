@@ -5,11 +5,12 @@ export const addRating = async (req, res) => {
   try {
     const { artisanName, score } = req.body;
 
-    if (!artisanName || score < 1 || score > 5) {
+    const numericScore = Number(score);
+    if (!artisanName || isNaN(numericScore) || numericScore < 1 || numericScore > 5) {
       return res.status(400).json({ message: 'Nome do artesão e nota entre 1 e 5 são obrigatórios.' });
     }
 
-    const newRating = await Rating.create({ artisanName, score });
+    const newRating = await Rating.create({ artisanName, score: numericScore });
     return res.status(201).json(newRating);
   } catch (error) {
     console.error('Erro ao adicionar avaliação:', error);

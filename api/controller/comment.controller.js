@@ -18,8 +18,8 @@ export const addComment = async (req, res) => {
 
     const newComment = await Comment.create({
       productId,
-      commenterName: user.name,
-      text
+      author: user.name,
+      content: text
     });
 
     return res.status(201).json(newComment);
