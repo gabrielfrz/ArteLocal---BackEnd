@@ -43,13 +43,16 @@ export const list = async (req, res) => {
         : { [Op.lte]: maxPrice };
     }
 
+    const validOrder = order.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
+
     const products = await Product.findAll({
       where: whereClause,
-      order: [['price', order.toLowerCase() === 'desc' ? 'DESC' : 'ASC']]
+      order: [['price', validOrder]]
     });
 
     const productsWithDetails = await Promise.all(products.map(async (product) => {
       const user = await User.findOne({ where: { name: product.artistName } });
+
       const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
       const averageRating = ratings.length
         ? (ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length).toFixed(1)
