@@ -5,6 +5,9 @@ import { connect } from './database/configpostgre.js';
 import userRoute from './routes/user.route.js';
 import exemploeroute from './routes/example.route.js';
 import productRoute from './routes/product.route.js';
+import commentRoute from './routes/comment.route.js';
+import ratingRoute from './routes/rating.route.js';
+
 
 dotenv.config();
 
@@ -61,3 +64,6 @@ connect().then(() => {
     console.log(' A API está pronta para receber requisições.');
   });
 });
+
+app.use('/comments', commentRoute);
+app.use('/ratings', ratingRoute);
