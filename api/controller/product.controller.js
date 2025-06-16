@@ -30,7 +30,7 @@ export const create = async (req, res) => {
   }
 };
 
-// GET /products - Listar produtos (cliente)
+// GET /products - Listar produtos para cliente
 export const list = async (req, res) => {
   try {
     const { minPrice, maxPrice, order = 'asc' } = req.query;
@@ -54,18 +54,17 @@ export const list = async (req, res) => {
       let comments = [];
 
       try {
-     
         const user = await User.findOne({ where: { name: product.artistName } });
-        if (user && user.email) artistEmail = user.email;
+        if (user?.email) artistEmail = user.email;
       } catch (err) {
-        console.error(`Erro ao buscar email de ${product.artistName}:`, err);
+        console.error(`Erro ao buscar email do artesão ${product.artistName}:`, err);
         artistEmail = 'Erro ao buscar email';
       }
 
       try {
-       
         const ratings = await Rating.findAll({ where: { artisanName: product.artistName } });
-        const validRatings = ratings.filter(r => r && typeof r.score === 'number' && !isNaN(r.score));
+
+        const validRatings = ratings.filter(r => r.userId && typeof r.score === 'number' && !isNaN(r.score));
 
         if (validRatings.length > 0) {
           const total = validRatings.reduce((sum, r) => sum + r.score, 0);
@@ -77,7 +76,6 @@ export const list = async (req, res) => {
       }
 
       try {
-       
         comments = await Comment.findAll({
           where: { productId: product.id },
           order: [['createdAt', 'DESC']]
@@ -129,7 +127,7 @@ export const listByUser = async (req, res) => {
   }
 };
 
-// DELETE /products/:id - Excluir obra (apenas o dono pode excluir)
+// DELETE /products/:id - Excluir obra (só o dono)
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -137,14 +135,10 @@ export const deleteProduct = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findByPk(decoded.id);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado.' });
-    }
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
 
     const product = await Product.findByPk(id);
-    if (!product) {
-      return res.status(404).json({ message: 'Produto não encontrado.' });
-    }
+    if (!product) return res.status(404).json({ message: 'Produto não encontrado.' });
 
     if (product.artistName !== user.name) {
       return res.status(403).json({ message: 'Você só pode excluir suas próprias obras.' });

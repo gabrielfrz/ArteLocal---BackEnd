@@ -26,20 +26,25 @@ export const addRating = async (req, res) => {
       return res.status(400).json({ message: 'Você já avaliou este artesão.' });
     }
 
-    const newRating = await Rating.create({ artisanName, score: numericScore, userId });
+    const newRating = await Rating.create({
+      artisanName,
+      score: numericScore,
+      userId
+    });
+
     return res.status(201).json(newRating);
   } catch (error) {
     console.error('Erro ao adicionar avaliação:', error);
-    return res.status(500).json({ message: 'Erro ao adicionar avaliação' });
+    return res.status(500).json({ message: 'Erro ao adicionar avaliação.' });
   }
 };
 
-// GET /ratings/:artisanName - Retornar média de avaliações de um artesão
+// GET /ratings/:artisanName - Calcular média de avaliações
 export const getAverageRating = async (req, res) => {
   try {
     const { artisanName } = req.params;
-    const ratings = await Rating.findAll({ where: { artisanName } });
 
+    const ratings = await Rating.findAll({ where: { artisanName } });
     const validRatings = ratings.filter(r => typeof r.score === 'number' && !isNaN(r.score));
 
     if (validRatings.length === 0) {
@@ -51,12 +56,12 @@ export const getAverageRating = async (req, res) => {
 
     return res.status(200).json({ average: average.toFixed(1) });
   } catch (error) {
-    console.error('Erro ao buscar média de avaliações:', error);
-    return res.status(500).json({ message: 'Erro ao buscar média de avaliações' });
+    console.error('Erro ao calcular média de avaliações:', error);
+    return res.status(500).json({ message: 'Erro ao calcular média de avaliações.' });
   }
 };
 
-// GET /ratings/check/:artisanName - Verificar se o usuário logado já avaliou o artesão
+// GET /ratings/check/:artisanName - Verificar se usuário já avaliou o artesão
 export const hasUserRatedArtisan = async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
@@ -72,11 +77,9 @@ export const hasUserRatedArtisan = async (req, res) => {
       }
     });
 
-    const alreadyRated = !!existingRating;
-
-    return res.status(200).json({ alreadyRated });
+    return res.status(200).json({ alreadyRated: !!existingRating });
   } catch (error) {
-    console.error('Erro ao verificar avaliação:', error);
-    return res.status(500).json({ message: 'Erro ao verificar avaliação' });
+    console.error('Erro ao verificar se usuário já avaliou:', error);
+    return res.status(500).json({ message: 'Erro ao verificar avaliação.' });
   }
 };
