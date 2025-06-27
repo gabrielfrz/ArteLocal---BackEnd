@@ -11,27 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
-
-      - name: Setup do Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Instalar dependências
-        run: npm install
+      - run: npm install
 
-      - name: Definir DATABASE_URL para Neon (banco na nuvem)
+      - name: Set DATABASE_URL to Neon URL
         run: echo "DATABASE_URL=postgresql://neondb_owner:npg_kGowS10zlZrO@ep-twilight-feather-acpyqp95-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require" >> $GITHUB_ENV
 
-      - name: Mostrar variável DATABASE_URL (para debug)
-        run: echo "DATABASE_URL is $DATABASE_URL"
+      - run: npx eslint . --max-warnings=0
 
-      - name: Rodar lint
-        run: npx eslint . --max-warnings=0
-
-      - name: Rodar testes
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-        run: npm test
+      - run: npm test
