@@ -56,8 +56,8 @@ describe('Auth Middleware', () => {
 
     try {
       verifyToken(req, res, next);
-    } catch (_error) {
-      // O erro é capturado pelo Express, não aqui.
+    } catch {
+  
     }
   });
 });

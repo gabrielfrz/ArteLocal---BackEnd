@@ -50,7 +50,7 @@ app.use((req, res) => {
 });
 
 // Error Handler global
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Erro interno no servidor' });
 });
