@@ -36,3 +36,4 @@ tmp/
 # Optional
 requests/*.sh
 
+gitflow/

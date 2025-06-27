@@ -6,10 +6,18 @@
   "type": "module",
   "scripts": {
     "start:app": "nodemon api/index.js",
-    "test": "jest",
+    "test": "jest --config=jest.config.mjs",
     "start:database": "docker compose up -d",
     "stop:database": "docker compose down",
-    "generate-secret-key": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+    "generate-secret-key": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
+    "gitflow:init": "git flow init -d",
+    "feature:start": "sh scripts/start-feature.sh",
+    "feature:finish": "sh scripts/finish-feature.sh",
+    "release:start": "sh scripts/start-release.sh",
+    "release:finish": "sh scripts/finish-release.sh",
+    "hotfix:start": "sh scripts/start-hotfix.sh",
+    "hotfix:finish": "sh scripts/finish-hotfix.sh",
+    "prepare": "husky install"
   },
   "author": "",
   "dependencies": {
@@ -23,8 +31,19 @@
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
+    "@babel/core": "^7.27.7",
+    "@babel/preset-env": "^7.27.2",
+    "babel-jest": "^30.0.2",
+    "eslint": "^9.29.0",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "lint-staged": "^16.1.2",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.1"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npx eslint --fix"
+    ]
   }
 }
