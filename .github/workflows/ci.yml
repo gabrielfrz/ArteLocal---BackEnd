@@ -19,8 +19,8 @@ jobs:
 
       - run: npm install
 
-      - name: Set DATABASE_URL to Neon URL
-        run: echo "DATABASE_URL=postgresql://neondb_owner:npg_kGowS10zlZrO@ep-twilight-feather-acpyqp95-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require" >> $GITHUB_ENV
+      - name: Set DATABASE_URL from secret
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
 
       - run: npx eslint . --max-warnings=0
 
