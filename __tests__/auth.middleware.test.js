@@ -53,13 +53,9 @@ describe('Auth Middleware', () => {
       throw new Error('Some other error');
     });
 
-
-    //Como o erro é lançado dentro de um bloco try...catch no middleware,
-    //a função de tratamento de erro do Express seria chamada.
-    //Aqui, estamos verificando se o middleware captura o erro e responde adequadamente.
     try {
       verifyToken(req, res, next);
-    } catch (error) {
+    } catch (_error) {
       // O erro é capturado pelo Express, não aqui.
     }
   });
