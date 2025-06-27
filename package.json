@@ -9,7 +9,14 @@
     "test": "jest",
     "start:database": "docker compose up -d",
     "stop:database": "docker compose down",
-    "generate-secret-key": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+    "generate-secret-key": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
+    "gitflow:init": "git flow init -d",
+    "feature:start": "sh scripts/start-feature.sh",
+    "feature:finish": "sh scripts/finish-feature.sh",
+    "release:start": "sh scripts/start-release.sh",
+    "release:finish": "sh scripts/finish-release.sh",
+    "hotfix:start": "sh scripts/start-hotfix.sh",
+    "hotfix:finish": "sh scripts/finish-hotfix.sh"
   },
   "author": "",
   "dependencies": {
