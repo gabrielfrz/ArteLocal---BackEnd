@@ -1,16 +1,29 @@
-# .github/workflows/ci.yml
-
 name: CI
 
 on:
   push:
-    branches: [ develop, main ]
+    branches: [develop, main]
   pull_request:
-    branches: [ develop, main ]
+    branches: [develop, main]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout do código
@@ -24,8 +37,11 @@ jobs:
       - name: Instalar dependências
         run: npm install
 
+      - name: Definir DATABASE_URL para o PostgreSQL de teste
+        run: echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/testdb" >> $GITHUB_ENV
+
       - name: Rodar lint
-        run: npx eslint .
+        run: npx eslint . --max-warnings=0
 
       - name: Rodar testes
         run: npm test
