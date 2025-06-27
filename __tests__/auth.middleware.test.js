@@ -49,18 +49,15 @@ describe('Auth Middleware', () => {
 
   it('deve retornar erro 500 para outros erros', () => {
     req.headers['authorization'] = 'Bearer valid-token';
-    jwt.verify.mockImplementation(() => {
-        throw new Error('Some other error');
+    jwt.verify.mockImplementation((token, secret, callback) => {
+      callback(new Error('Some other error'));
     });
 
 
-    //Como o erro é lançado dentro de um bloco try...catch no middleware,
-    //a função de tratamento de erro do Express seria chamada.
-    //Aqui, estamos verificando se o middleware captura o erro e responde adequadamente.
     try {
-        verifyToken(req, res, next);
-    } catch (error) {
-        // O erro é capturado pelo Express, não aqui.
+      verifyToken(req, res, next);
+    } catch {
+  
     }
   });
 });

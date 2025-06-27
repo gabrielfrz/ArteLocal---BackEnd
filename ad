@@ -1,0 +1,53 @@
+* [33m6d2a7cc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m chore: ajustes locais antes do rebase
+* [33ma2c0552[m fix: remove --max-warnings from ESLint in CI
+*   [33m1a3bb22[m Merge pull request #1 from gabrielfrz/feature/ci
+[32m|[m[33m\[m  
+[32m|[m * [33m80cdf8f[m Adiciona workflow de CI com lint e testes
+[32m|[m * [33m874ad7f[m Configuração final de ESLint com suporte a Husky e lint-staged
+[32m|[m * [33m69bbbc5[m chore: adiciona scripts de automação do GitFlow
+[32m|[m[32m/[m  
+* [33mf5fb798[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Corrigindo comments
+* [33m64a0784[m Alterações do Rating
+* [33mf1a69de[m Consertando product
+* [33m91c4fe6[m Consertando controlles
+* [33ma2145f6[m Consertando rotas
+* [33mc991be8[m Controller
+* [33m18d7038[m Corrigindo obras
+* [33m23810f3[m Consertando
+* [33m22e63cc[m Corrigindo Controller
+* [33m9aeba4c[m Atualizando rating
+* [33mdc38284[m Feature de exclusão
+* [33m5e341c5[m Corrigindo comentarios
+* [33m11c2e90[m Validando comentarios
+* [33m95d2956[m Corrigindo Comentarios
+* [33m77f6c13[m Consertando controller
+* [33m1d6fb30[m Corrigindo Index
+* [33m92ce1d1[m Adicionando Comentários e rating
+* [33m636f3be[m Exibição para os Clientes
+* [33m1dd592f[m Corrigindo rotas
+* [33mb937d25[m corrigindo rotas
+* [33m38f8ba0[m Padronizando retorno de imagem: mantendo campo 'image' no GET e POST de produtos
+* [33m17cd252[m Corrigindo
+* [33mf161847[m Consertando o Upload
+* [33mcf3b9e6[m Consertando products
+* [33m2a3839a[m feat: add product module with create and list endpoints (artisan announcements and client product view)
+* [33m76bdc7a[m feat: add user role (client/artisan) with profile selection in backend
+* [33m170b780[m tests
+* [33m678cb83[m[33m ([m[1;33mtag: [m[1;33m1.1.0[m[33m)[m Fixing vercel
+* [33m2655d0d[m Corrigindo CORS
+* [33mad988af[m Instalando o CORS
+* [33mf02cf84[m[33m ([m[1;33mtag: [m[1;33m1.0.3[m[33m)[m Update README.md
+* [33m9daa86a[m Trocando o Index
+* [33me98a73b[m Alterações no Index
+* [33m6bce933[m Corrige estrutura para deploy serverless na Vercel
+* [33me134933[m[33m ([m[1;33mtag: [m[1;33m1.0.2[m[33m)[m Changes for PG
+* [33m8d61cee[m Update README.md
+* [33m9548d73[m[33m ([m[1;33mtag: [m[1;33m1.0.1[m[33m)[m Update README.md
+* [33m46aef7d[m fix: add explicit pg import and dialectModule for Vercel compatibility
+* [33m9d48abe[m Fix: reinstall pg package
+* [33mcdfebb8[m Test: uninstall pg to observe Vercel behavior
+* [33m0b93464[m Little Adjust
+* [33m6785533[m Fix Vercel build config for Express backend
+* [33m1336f75[m Trigger redeploy on Vercel
+* [33m1e4fc9c[m[33m ([m[1;33mtag: [m[1;33m1.0.0[m[33m, [m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m Initial commit: Express + PostgreSQL + JWT + Neon
+* [33m02e0bb2[m Initial commit
