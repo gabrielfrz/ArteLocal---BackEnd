@@ -49,9 +49,10 @@ describe('Auth Middleware', () => {
 
   it('deve retornar erro 500 para outros erros', () => {
     req.headers['authorization'] = 'Bearer valid-token';
-    jwt.verify.mockImplementation(() => {
-      throw new Error('Some other error');
+    jwt.verify.mockImplementation((token, secret, callback) => {
+      callback(new Error('Some other error'));
     });
+
 
     try {
       verifyToken(req, res, next);

@@ -40,6 +40,13 @@ jobs:
       - name: Definir DATABASE_URL para o PostgreSQL de teste
         run: echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/testdb" >> $GITHUB_ENV
 
+      - name: Esperar PostgreSQL estar pronto
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Aguardando PostgreSQL..."
+            sleep 1
+          done
+
       - name: Rodar lint
         run: npx eslint . --max-warnings=0
 
